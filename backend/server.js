@@ -10,7 +10,7 @@ const app = express();
 app.use(
     cors({
         origin: [
-            "https://sera-ai-ten.vercel.app", // your Vercel frontend URL
+            "https://sera-ai-five.vercel.app", // your Vercel frontend URL
             "http://localhost:3000"           // Optional (React dev)
         ],
         methods: ["GET", "POST"],
