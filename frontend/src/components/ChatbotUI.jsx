@@ -3,7 +3,7 @@ import { FaFacebook, FaTwitter, FaInstagram, FaGithub } from "react-icons/fa";
 import { IoSend } from "react-icons/io5";
 import "./ChatbotUI.css";
 
-const TypingText = ({ text, speed = 30 }) => {
+const TypingText = ({ text, speed = 12 }) => {
     const [displayedText, setDisplayedText] = useState("");
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isComplete, setIsComplete] = useState(false);
@@ -11,8 +11,8 @@ const TypingText = ({ text, speed = 30 }) => {
     useEffect(() => {
         if (currentIndex < text.length) {
             const timer = setTimeout(() => {
-                setDisplayedText(prev => prev + text[currentIndex]);
-                setCurrentIndex(prev => prev + 1);
+                setDisplayedText((prev) => prev + text[currentIndex]);
+                setCurrentIndex((prev) => prev + 1);
             }, speed);
             return () => clearTimeout(timer);
         } else {
@@ -33,8 +33,13 @@ export default function ChatbotUI() {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [chatStarted, setChatStarted] = useState(false);
+    const messagesEndRef = useRef(null);
 
     const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages]);
 
     const handleSend = async () => {
         if (!input.trim()) return;
@@ -57,7 +62,6 @@ export default function ChatbotUI() {
             });
 
             const data = await res.json();
-
             const aiMessage = {
                 sender: "ai",
                 text: data.reply || "SERA didn’t respond.",
@@ -68,11 +72,15 @@ export default function ChatbotUI() {
         } catch (err) {
             setMessages((prev) => [
                 ...prev,
-                { sender: "ai", text: "⚠️ Error: Could not connect to the AI server.", isError: true },
+                {
+                    sender: "ai",
+                    text: "⚠️ Error: Could not connect to the AI server.",
+                    isError: true,
+                },
             ]);
+        } finally {
+            setLoading(false);
         }
-
-        setLoading(false);
     };
 
     const handleContactDeveloper = () => {
@@ -119,7 +127,7 @@ export default function ChatbotUI() {
                             messages.map((msg, idx) => (
                                 <div
                                     key={idx}
-                                    className={`message - row ${msg.sender === "user" ? "user-row" : "ai-row"}`}
+                                    className={`message-row ${msg.sender === "user" ? "user-row" : "ai-row"}`}
                                 >
                                     {msg.sender === "ai" && (
                                         <img
@@ -129,26 +137,18 @@ export default function ChatbotUI() {
                                         />
                                     )}
 
-                                    <div
-                                        className={`message - bubble ${msg.sender === "user" ? "user-msg" : "ai-msg"}`}
-                                    >
-
-                                        {msg.sender === 'ai' ? (
-                                            <TypingText text={msg.text} speed={30} />
+                                    <div className={`message-bubble ${msg.sender === "user" ? "user-msg" : "ai-msg"}`}>
+                                        {msg.sender === "ai" ? (
+                                            <TypingText text={msg.text} speed={12} />
                                         ) : (
                                             msg.text
                                         )}
 
                                         {msg.image && (
                                             <div className="image-container">
-                                                <img
-                                                    src={msg.image}
-                                                    alt="AI Response"
-                                                    className="chat-image"
-                                                />
+                                                <img src={msg.image} alt="AI Response" className="chat-image" />
                                             </div>
                                         )}
-
 
                                         {msg.isError && (
                                             <button className="contact-btn" onClick={handleContactDeveloper}>
@@ -168,6 +168,7 @@ export default function ChatbotUI() {
                             ))
                         )}
                         {loading && <p className="thinking-text"></p>}
+                        <div ref={messagesEndRef} />
                     </div>
 
                     <div className="input-bar">
