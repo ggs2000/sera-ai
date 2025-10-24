@@ -175,47 +175,61 @@ html {
 }
 
 .thinking-text {
-    width: 160px;
-    height: 18px;
+    width: 30px;
+    height: 30px;
     margin: 1rem auto;
+    border: 3px solid transparent;
+    border-radius: 50%;
+    border-top-color: #df19b4;
+    border-bottom-color: #df19b4;
     position: relative;
-    overflow: hidden;
-    display: block;
+    animation: spinCircle 1s linear infinite;
 }
 
 .thinking-text::before {
     content: '';
     position: absolute;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-    width: 12px;
-    height: 12px;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border: 3px solid transparent;
+    border-top-color: rgba(223, 25, 180, 0.4);
+    border-bottom-color: rgba(223, 25, 180, 0.4);
     border-radius: 50%;
-    background: #df19b4;
-    box-shadow: 18px 0 0 #df19b4, 36px 0 0 #df19b4, 54px 0 0 #df19b4, 72px 0 0 #df19b4;
-    animation: snakeDots 1.4s ease-in-out infinite;
+    animation: spinCircleReverse 1.5s linear infinite;
 }
 
-@keyframes snakeDots {
+@keyframes spinCircle {
     0% {
-        left: 0;
-    }
-
-    50% {
-        left: calc(100% - 84px);
+        transform: rotate(0deg);
     }
 
     100% {
-        left: 0;
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spinCircleReverse {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(-360deg);
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .thinking-text {
+        animation: none;
+        border-color: #df19b4;
+        opacity: 0.8;
+    }
+
     .thinking-text::before {
         animation: none;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        opacity: 0.4;
     }
 }
 
